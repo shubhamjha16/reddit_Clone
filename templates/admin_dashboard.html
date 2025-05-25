@@ -16,10 +16,11 @@
     </div>
     
     <h3>User Management</h3>
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>ID</th>
+    <div class="table-responsive-md-custom">
+        <table class="table table-striped table-hover admin-dashboard-user-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
                 <th>Username</th>
                 <th>Email</th>
                 <th>College</th>
@@ -58,6 +59,7 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+        </table>
+    </div>
     {# Add pagination if user list becomes very long #}
 {% endblock %}

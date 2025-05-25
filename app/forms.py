@@ -9,6 +9,19 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     college = SelectField('College', coerce=int, validators=[DataRequired()]) # We'll populate choices in the route
+    college_id_input = StringField('College ID Number (Optional)', validators=[Length(max=50)])
+    year_of_college_choices = [
+        ('', '-- Select Year --'),
+        ('Freshman', 'Freshman'),
+        ('Sophomore', 'Sophomore'),
+        ('Junior', 'Junior'),
+        ('Senior', 'Senior'),
+        ('Graduate Year 1', 'Graduate Year 1'),
+        ('Graduate Year 2+', 'Graduate Year 2+'),
+        ('Alumni', 'Alumni (if role is Alumni)'), # Conditional or adjust role
+        ('Other', 'Other'),
+    ]
+    year_of_college = SelectField('Year of College (Optional)', choices=year_of_college_choices, validators=[])
     role = SelectField('Role', choices=[(User.ROLE_STUDENT, 'Student'), (User.ROLE_ALUMNI, 'Alumni')], validators=[DataRequired()])
     submit = SubmitField('Register')
 

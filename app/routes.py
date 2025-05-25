@@ -72,7 +72,9 @@ def register():
             email=form.email.data,
             college_id=form.college.data if form.college.data != 0 else None,
             role=form.role.data,
-            is_college_verified=False 
+            is_college_verified=False,
+            college_id_input=form.college_id_input.data,
+            year_of_college=form.year_of_college.data if form.year_of_college.data else None
         )
         user.set_password(form.password.data)
         db.session.add(user)
@@ -670,6 +672,20 @@ def search():
                            posts=posts_results,
                            courses=courses_results,
                            colleges=colleges_results)
+
+
+# -------------------------- User Profile Route --------------------------
+
+@app.route('/user/<username>')
+@login_required # Or remove if profiles should be public
+def user_profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    # Add pagination for posts and comments later if desired
+    user_posts = user.posts.order_by(Post.timestamp.desc()).limit(5).all() # Show recent 5 posts
+    user_comments = user.comments.order_by(Comment.timestamp.desc()).limit(5).all() # Show recent 5 comments
+    
+    return render_template('user_profile.html', title=f"Profile: {user.username}", 
+                           user=user, user_posts=user_posts, user_comments=user_comments)
 
 
 # -------------------------- Notification Routes --------------------------

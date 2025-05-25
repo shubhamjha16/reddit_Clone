@@ -8,6 +8,7 @@
     </div>
 
     {% if reports.items %}
+    <div class="table-responsive-md-custom">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -56,6 +57,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
          {% if reports.pages > 1 %}
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">

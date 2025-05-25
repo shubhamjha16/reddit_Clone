@@ -19,6 +19,9 @@ class User(UserMixin, db.Model):
     ROLE_ADMIN = 'admin' # For site administration
     role = db.Column(db.String(20), default=ROLE_STUDENT, nullable=False)
     is_college_verified = db.Column(db.Boolean, default=False, nullable=False) # True if college affiliation is verified
+    college_id_input = db.Column(db.String(50), nullable=True) # For student ID, etc.
+    year_of_college = db.Column(db.String(20), nullable=True) # e.g., Freshman, Sophomore, Graduate Year X
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) # User registration timestamp
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')

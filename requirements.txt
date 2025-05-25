@@ -4,3 +4,7 @@ Flask-WTF
 Flask-Login
 email_validator
 WTForms-SQLAlchemy
+Gunicorn
+pytest
+pytest-flask
+pytest-cov

@@ -8,6 +8,7 @@
     </div>
 
     {% if colleges %}
+    <div class="table-responsive-md-custom">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -38,6 +39,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     {% else %}
         <p>No colleges found. <a href="{{ url_for('admin_create_college') }}">Add the first one!</a></p>
     {% endif %}
