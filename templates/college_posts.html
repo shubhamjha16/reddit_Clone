@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Posts for {{ college.name }}</h2>
+    <hr>
+    {% if posts %}
+        {% for post in posts %}
+            <article class="media content-section">
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="#">{{ post.author.username }}</a>
+                  <small class="text-muted">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                   <span class="badge badge-info">{{ post.college.name }}</span>
+                </div>
+                <h2><a class="article-title" href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></h2>
+                <p class="article-content">{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p> {# Preview content #}
+                <div>
+                    <small>Score: {{ get_target_score('Post', post.id) }}</small>
+                    {% if current_user.is_authenticated and current_user.id != post.author.id %}
+                        <a href="{{ url_for('report_post', post_id=post.id) }}" class="btn btn-xs btn-outline-warning ml-2">Report</a>
+                    {% endif %}
+                </div>
+              </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>No posts yet for this college. {% if current_user.is_authenticated and current_user.college_id == college.id %}<a href="{{ url_for('create_post') }}" class="btn btn-primary">Be the first to create one!</a>{% elif current_user.is_authenticated and current_user.college_id != college.id %}<br><small>You are currently affiliated with {{ current_user.college.name }}. You can only create posts for your own college.</small>{% elif not current_user.is_authenticated %}<a href="{{ url_for('login', next=request.url) }}">Log in</a> to create a post.{% endif %}</p>
+    {% endif %}
+
+    {% if pagination and pagination.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('college_posts', college_id=college.id, page=pagination.prev_num) }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if pagination.page == page_num %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('college_posts', college_id=college.id, page=page_num) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('college_posts', college_id=college.id, page=pagination.next_num) }}">Next</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }} - CampusConnect</title>
+    <!-- Add Bootstrap CSS or any other global CSS here -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <!-- Custom CSS -->
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{{ url_for('index') }}">CampusConnect</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+          </li>
+          {% if current_user.is_authenticated and current_user.college_id %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('create_post') }}">New Post</a>
+            </li>
+          {% endif %}
+          <!-- Add other navigation links here, e.g., for colleges -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownColleges" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Colleges
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownColleges">
+              {% set nav_colleges = get_colleges_for_navbar() %}
+              {% if nav_colleges %}
+                {% for nav_college in nav_colleges %}
+                  <a class="dropdown-item" href="{{ url_for('college_posts', college_id=nav_college.id) }}">{{ nav_college.name }} - Posts</a>
+                {% endfor %}
+              {% else %}
+                <a class="dropdown-item" href="#">No colleges yet</a>
+              {% endif %}
+            </div>
+          </li>
+          {% if current_user.is_authenticated and current_user.college_id %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMyCollege" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              My College ({{ current_user.college.name }})
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMyCollege">
+              <a class="dropdown-item" href="{{ url_for('college_posts', college_id=current_user.college_id) }}">Posts</a>
+              <a class="dropdown-item" href="{{ url_for('list_college_courses', college_id=current_user.college_id) }}">Courses</a>
+              <a class="dropdown-item" href="{{ url_for('list_college_study_groups', college_id=current_user.college_id) }}">Study Groups</a>
+              <a class="dropdown-item" href="{{ url_for('list_college_events', college_id=current_user.college_id) }}">Events</a>
+            </div>
+          </li>
+          {% endif %}
+        </ul>
+        <form class="form-inline my-2 my-lg-0 mr-auto" action="{{ url_for('search') }}" method="get">
+            {{ search_form.hidden_tag() if search_form.hidden_tag }} {# CSRF if needed, though GET forms usually don't require it #}
+            <div class="input-group">
+                {{ search_form.query(class="form-control form-control-sm", placeholder="Search...") }}
+                <div class="input-group-append">
+                    {{ search_form.submit(class="btn btn-outline-secondary btn-sm") }}
+                </div>
+            </div>
+        </form>
+        <ul class="navbar-nav">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('list_notifications') }}">
+                    Notifications
+                    {% set unread_count = get_unread_notifications_count() %}
+                    {% if unread_count > 0 %}
+                        <span class="badge badge-danger">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <li class="nav-item">
+              {# Make username clickable to a user profile page if it exists #}
+              <span class="navbar-text">Logged in as: {{ current_user.username }}</span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container mt-3">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
